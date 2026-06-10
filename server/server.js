@@ -91,6 +91,36 @@ app.put('/api/members/:id', async (req, res) => {
   }
 });
 
+//memberships api:
+app.get('/api/memberships', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM memberships');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+//sessions api:
+app.get('/api/sessions', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM training_sessions');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+//maintenance api:
+app.get('/api/maintenance', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM equipment_maintenance');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 //trainers api:
 app.get('/api/trainers', async (req, res) => {
   try {

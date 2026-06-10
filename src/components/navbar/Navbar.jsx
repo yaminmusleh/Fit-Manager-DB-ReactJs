@@ -60,7 +60,7 @@ export default function Navbar() {
           font-weight: 900;
           font-size: 1.45rem;
           letter-spacing: 0.05em;
-          text-transform: uppercase;
+          text-transform: capitalize;
           color: #F0EDE8;
           line-height: 1;
           cursor: pointer;
@@ -73,7 +73,7 @@ export default function Navbar() {
           font-size: 0.78rem !important;
           font-weight: 500 !important;
           letter-spacing: 0.07em !important;
-          text-transform: uppercase !important;
+          text-transform: capitalize !important;
           color: #888 !important;
           padding: 5px 11px !important;
           min-width: unset !important;
@@ -110,7 +110,7 @@ export default function Navbar() {
           font-size: 0.85rem !important;
           font-weight: 500 !important;
           letter-spacing: 0.05em !important;
-          text-transform: uppercase !important;
+          text-transform: capitalize !important;
           color: #aaa !important;
           border-radius: 4px !important;
         }
@@ -158,7 +158,7 @@ export default function Navbar() {
               alignItems: "center", gap: 0.75,
               fontSize: "0.7rem", fontFamily: "Inter, sans-serif",
               fontWeight: 600, letterSpacing: "0.06em",
-              textTransform: "uppercase", color: "#555",
+              textTransform: "capitalize", color: "#555",
               flexShrink: 0,
             }}>
               <Box sx={{
@@ -218,7 +218,7 @@ export default function Navbar() {
                       fontSize: "0.82rem",
                       fontWeight: 500,
                       letterSpacing: "0.06em",
-                      textTransform: "uppercase",
+                      textTransform: "capitalize",
                     }}
                   />
                 </ListItemButton>
