@@ -1,10 +1,9 @@
-require('dotenv').config();
+require("dotenv").config();
 console.log("DB_USER:", process.env.DB_USER);
 console.log("DB_PASSWORD:", process.env.DB_PASSWORD);
-const express = require('express');
-const mysql = require('mysql2/promise');
-const cors = require('cors');
-
+const express = require("express");
+const mysql = require("mysql2/promise");
+const cors = require("cors");
 
 const app = express();
 
@@ -23,10 +22,10 @@ const pool = mysql.createPool({
 });
 
 //test DB connection
-app.get('/api/test', async (req, res) => {
+app.get("/api/test", async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT 1');
-    res.json({ message: 'Connected to database successfully!' });
+    const [rows] = await pool.query("SELECT 1");
+    res.json({ message: "Connected to database successfully!" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -39,24 +38,42 @@ app.listen(PORT, () => {
 });
 
 //get all members:
-app.get('/api/members', async (req, res) => {
+app.get("/api/members", async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM members');
+    const [rows] = await pool.query("SELECT * FROM members");
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 // post new member:
-app.post('/api/members', async (req, res) => {
+app.post("/api/members", async (req, res) => {
   try {
-    const { member_id, first_name, last_name, gender, age, phone_number, email, registration_date } = req.body;
+    const {
+      member_id,
+      first_name,
+      last_name,
+      gender,
+      age,
+      phone_number,
+      email,
+      registration_date,
+    } = req.body;
 
     await pool.query(
       `INSERT INTO members 
       (member_id, first_name, last_name, gender, age, phone_number, email, registration_date)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [member_id, first_name, last_name, gender, age, phone_number, email, registration_date]
+      [
+        member_id,
+        first_name,
+        last_name,
+        gender,
+        age,
+        phone_number,
+        email,
+        registration_date,
+      ],
     );
 
     res.json({ message: "Member added" });
@@ -66,9 +83,11 @@ app.post('/api/members', async (req, res) => {
 });
 
 //delete member:
-app.delete('/api/members/:id', async (req, res) => {
+app.delete("/api/members/:id", async (req, res) => {
   try {
-    await pool.query('DELETE FROM members WHERE member_id = ?', [req.params.id]);
+    await pool.query("DELETE FROM members WHERE member_id = ?", [
+      req.params.id,
+    ]);
     res.json({ message: "Deleted" });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -76,15 +95,13 @@ app.delete('/api/members/:id', async (req, res) => {
 });
 
 //update member:
-app.put('/api/members/:id', async (req, res) => {
+app.put("/api/members/:id", async (req, res) => {
   try {
-    const { first_name, last_name } = req.body;
-
+    const { first_name, last_name, phone_number, email } = req.body;
     await pool.query(
-      'UPDATE members SET first_name=?, last_name=? WHERE member_id=?',
-      [first_name, last_name, req.params.id]
+      "UPDATE members SET first_name=?, last_name=?, phone_number=?, email=? WHERE member_id=?",
+      [first_name, last_name, phone_number, email, req.params.id],
     );
-
     res.json({ message: "Updated" });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -92,19 +109,32 @@ app.put('/api/members/:id', async (req, res) => {
 });
 
 //memberships api:
-app.get('/api/memberships', async (req, res) => {
+app.get("/api/memberships", async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM memberships');
+    const [rows] = await pool.query("SELECT * FROM memberships");
     res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+//update membership:
+app.put('/api/memberships/:id', async (req, res) => {
+  try {
+    const { status, start_date, end_date } = req.body;
+    await pool.query(
+      'UPDATE memberships SET status=?, start_date=?, end_date=? WHERE membership_id=?',
+      [status, start_date, end_date, req.params.id]
+    );
+    res.json({ message: "Membership updated" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 //sessions api:
-app.get('/api/sessions', async (req, res) => {
+app.get("/api/sessions", async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM training_sessions');
+    const [rows] = await pool.query("SELECT * FROM training_sessions");
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -112,9 +142,9 @@ app.get('/api/sessions', async (req, res) => {
 });
 
 //maintenance api:
-app.get('/api/maintenance', async (req, res) => {
+app.get("/api/maintenance", async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM equipment_maintenance');
+    const [rows] = await pool.query("SELECT * FROM equipment_maintenance");
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -122,9 +152,9 @@ app.get('/api/maintenance', async (req, res) => {
 });
 
 //trainers api:
-app.get('/api/trainers', async (req, res) => {
+app.get("/api/trainers", async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM trainers');
+    const [rows] = await pool.query("SELECT * FROM trainers");
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -132,9 +162,9 @@ app.get('/api/trainers', async (req, res) => {
 });
 
 //equipment api:
-app.get('/api/equipment', async (req, res) => {
+app.get("/api/equipment", async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM equipment');
+    const [rows] = await pool.query("SELECT * FROM equipment");
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -142,12 +172,11 @@ app.get('/api/equipment', async (req, res) => {
 });
 
 //lockers api:
-app.get('/api/lockers', async (req, res) => {
+app.get("/api/lockers", async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM gym_lockers');
+    const [rows] = await pool.query("SELECT * FROM gym_lockers");
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
-
