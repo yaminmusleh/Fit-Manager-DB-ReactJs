@@ -161,6 +161,53 @@ app.get("/api/trainers", async (req, res) => {
   }
 });
 
+// Get sessions with member names joined
+app.get("/api/sessions/detailed", async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT ts.*, 
+             CONCAT(m.first_name, ' ', m.last_name) AS member_name
+      FROM training_sessions ts
+      JOIN members m ON ts.member_id = m.member_id
+    `);
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Add new session
+app.post("/api/sessions", async (req, res) => {
+  try {
+    const { member_id, trainer_id, session_date, session_time, duration_minutes } = req.body;
+    await pool.query(
+      `INSERT INTO training_sessions (member_id, trainer_id, session_date, session_time, duration_minutes)
+       VALUES (?, ?, ?, ?, ?)`,
+      [member_id, trainer_id, session_date, session_time, duration_minutes]
+    );
+    res.json({ message: "Session added" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get sessions with member + trainer names joined
+app.get("/api/sessions/detailed", async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT ts.*,
+             CONCAT(m.first_name, ' ', m.last_name) AS member_name,
+             CONCAT(t.first_name, ' ', t.last_name) AS trainer_name
+      FROM training_sessions ts
+      JOIN members m ON ts.member_id = m.member_id
+      JOIN trainers t ON ts.trainer_id = t.trainer_id
+    `);
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 //equipment api:
 app.get("/api/equipment", async (req, res) => {
   try {
