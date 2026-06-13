@@ -218,6 +218,89 @@ app.get("/api/equipment", async (req, res) => {
   }
 });
 
+// Add maintenance record
+app.post("/api/maintenance", async (req, res) => {
+  try {
+    const { equipment_id, maintenance_date, issue_description, technician_name, notes, status } = req.body;
+    await pool.query(
+      `INSERT INTO equipment_maintenance 
+       (equipment_id, maintenance_date, issue_description, technician_name, notes, status)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [equipment_id, maintenance_date, issue_description, technician_name, notes, status]
+    );
+    res.json({ message: "Maintenance record added" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update maintenance status
+app.put("/api/maintenance/:id", async (req, res) => {
+  try {
+    const { status } = req.body;
+    await pool.query(
+      "UPDATE equipment_maintenance SET status=? WHERE maintenance_id=?",
+      [status, req.params.id]
+    );
+    res.json({ message: "Maintenance updated" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update equipment condition
+app.put("/api/equipment/:id", async (req, res) => {
+  try {
+    const { condition_status } = req.body;
+    await pool.query(
+      "UPDATE equipment SET condition_status=? WHERE equipment_id=?",
+      [condition_status, req.params.id]
+    );
+    res.json({ message: "Equipment updated" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Assign locker to member
+app.post("/api/lockers/assign", async (req, res) => {
+  try {
+    const { locker_id, member_id, usage_date, start_time } = req.body;
+    // Update locker status to Occupied
+    await pool.query(
+      "UPDATE gym_lockers SET status='Occupied' WHERE locker_id=?",
+      [locker_id]
+    );
+    // Add locker usage record
+    await pool.query(
+      "INSERT INTO locker_usage (locker_id, member_id, usage_date, start_time) VALUES (?, ?, ?, ?)",
+      [locker_id, member_id, usage_date, start_time]
+    );
+    res.json({ message: "Locker assigned" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get locker usage with member names
+app.get("/api/lockers/usage", async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT lu.*, 
+             CONCAT(m.first_name, ' ', m.last_name) AS member_name,
+             m.member_id
+      FROM locker_usage lu
+      JOIN members m ON lu.member_id = m.member_id
+      ORDER BY lu.usage_date DESC
+    `);
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
 //lockers api:
 app.get("/api/lockers", async (req, res) => {
   try {
