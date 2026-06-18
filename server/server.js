@@ -91,11 +91,6 @@ app.delete("/api/members/:id", async (req, res) => {
     // Delete child records first
     await conn.query("DELETE FROM training_sessions WHERE member_id = ?", [req.params.id]);
     
-    // Add any other tables that reference member_id
-    // await conn.query("DELETE FROM memberships WHERE member_id = ?", [req.params.id]);
-    // await conn.query("DELETE FROM locker_usage WHERE member_id = ?", [req.params.id]);
-
-    // Now safe to delete the member
     await conn.query("DELETE FROM members WHERE member_id = ?", [req.params.id]);
 
     await conn.commit();
